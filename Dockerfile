@@ -36,6 +36,8 @@ RUN set -eux; \
   rm -Rf webapps/*; \
   rm tomcat.tar.gz*
 
+COPY server.xml /tomcat/conf/server.xml
+
 ENV JAVA_OPTS=" -XX:+PrintFlagsFinal -XX:+PrintGCDetails -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
 
 CMD ["bin/catalina.sh", "run"]
