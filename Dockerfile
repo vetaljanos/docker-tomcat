@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   wget \
   && rm -rf /var/lib/apt/lists/*
 
-ENV TOMCAT_MAJOR 7
-ENV TOMCAT_VERSION 7.0.82
+ENV TOMCAT_MAJOR 8
+ENV TOMCAT_VERSION 8.5.23
 
 ENV TOMCAT_TGZ_URLS \
 # https://issues.apache.org/jira/browse/INFRA-8753?focusedCommentId=14735394#comment-14735394
