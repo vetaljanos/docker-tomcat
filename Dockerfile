@@ -6,6 +6,7 @@ RUN mkdir /tomcat
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   wget \
+  easy-rsa \
   && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_MAJOR 8
@@ -39,13 +40,21 @@ COPY server.xml /tomcat/conf/server.xml
 ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
 ENV CATALINA_TMPDIR=/tmp
 
-#generate certificate
-COPY ssl.jks /tomcat/
+#create ssl base certificate
+RUN make-cadir /ssl \
+  && cd /ssl \
+  && . ./vars \
+  && ./clean-all \
+  && ./pkitool --initca \
+  && ./pkitool init-pki \
+  && ./pkitool --server tomcat 
 
 #create tomcat user/group
 RUN groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat \
   && chown -R tomcat:tomcat /tomcat \
-  && chmod 400 /tomcat/ssl.jks
+  && chown -R root:tomcat /ssl \
+  && chmod -R g+rx /ssl /ssl/keys \
+  && chmod g+r /ssl/keys/ca.crt /ssl/keys/tomcat.* 
 
 USER tomcat:tomcat
 

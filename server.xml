@@ -18,7 +18,11 @@
         <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
                    maxThreads="150" SSLEnabled="true">
           <SSLHostConfig>
-            <Certificate certificateKeystoreFile="ssl.jks" type="RSA" certificateKeystorePassword="amdspfiX1" />
+            <!--<Certificate certificateKeystoreFile="conf/localhost-rsa.jks" type="RSA" />-->
+            <Certificate certificateKeyFile="/ssl/keys/tomcat.key"
+                         certificateFile="/ssl/keys/tomcat.crt"
+                         certificateChainFile="/ssl/keys/ca.crt"
+                         type="RSA" />
           </SSLHostConfig>
         </Connector>
 
