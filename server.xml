@@ -15,6 +15,13 @@
                    SSLEnabled="false"
                    redirectPort="8443" />
 
+        <Connector
+           protocol="org.apache.coyote.http11.Http11NioProtocol"
+           port="8443" maxThreads="200"
+           scheme="https" secure="true" SSLEnabled="true"
+           keystoreFile="/ssl/tomcat.keystore" keystorePass="tomcat"
+           clientAuth="false" sslProtocol="TLS"/>
+
         <Engine name="Catalina" defaultHost="localhost">
 
             <Host name="localhost"  appBase="webapps"

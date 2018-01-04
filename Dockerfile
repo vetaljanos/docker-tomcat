@@ -4,8 +4,6 @@ ENV CATALINA_HOME=/tomcat
 
 RUN mkdir /tomcat
 
-WORKDIR $CATALINA_HOME
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
   wget \
   && rm -rf /var/lib/apt/lists/*
@@ -31,13 +29,28 @@ RUN set -eux; \
     fi; \
   done; \
   [ -n "$success" ]; \
-  tar -xvf tomcat.tar.gz --strip-components=1; \
-  rm bin/*.bat; \
-  rm -Rf webapps/*; \
+  tar -xvf tomcat.tar.gz --strip-components=1 -C /tomcat; \
+  rm tomcat/bin/*.bat; \
+  rm -Rf tomcat/webapps/*; \
   rm tomcat.tar.gz*
 
 COPY server.xml /tomcat/conf/server.xml
 
-ENV JAVA_OPTS=" -XX:+PrintFlagsFinal -XX:+PrintGCDetails -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
+ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
+ENV CATALINA_TMPDIR=/tmp
+
+#create ssl base certificate
+RUN mkdir /ssl \
+  && /usr/lib/jvm/default-jvm/bin/keytool -genkey -noprompt -alias tomcat -keyalg RSA -keystore /ssl/tomcat.keystore -storepass tomcat -keypass tomcat -dname "CN=tomcat, OU=ID, O=Private, L=Kharkov, S=, C=UA"
+
+#create tomcat user/group
+RUN groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat \
+  && chown -R tomcat:tomcat /tomcat \
+  && chown -R root:tomcat /ssl \
+  && chmod g+r /ssl/tomcat.keystore
+
+USER tomcat:tomcat
+
+WORKDIR $CATALINA_HOME
 
 CMD ["bin/catalina.sh", "run"]
