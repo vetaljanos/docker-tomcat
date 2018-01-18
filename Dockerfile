@@ -36,6 +36,7 @@ RUN set -eux; \
   rm tomcat.tar.gz*
 
 COPY server.xml /tomcat/conf/server.xml
+COPY logging.properties /tomcat/conf/logging.properties
 
 ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
 ENV CATALINA_TMPDIR=/tmp
@@ -53,6 +54,7 @@ RUN make-cadir /ssl \
 RUN groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat \
   && chown -R tomcat:tomcat /tomcat \
   && chown -R root:tomcat /ssl \
+  && chown -R root:tomcat /ssl/keys \
   && chmod -R g+rx /ssl /ssl/keys \
   && chmod g+r /ssl/keys/ca.crt /ssl/keys/tomcat.* 
 
