@@ -48,10 +48,8 @@ RUN make-cadir /ssl \
   && ./clean-all \
   && ./pkitool --initca \
   && ./pkitool init-pki \
-  && ./pkitool --server tomcat 
-
-#create tomcat user/group
-RUN groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat \
+  && ./pkitool --server tomcat \
+  && groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat \
   && chown -R tomcat:tomcat /tomcat \
   && chown -R root:tomcat /ssl \
   && chown -R root:tomcat /ssl/keys \
