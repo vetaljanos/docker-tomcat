@@ -51,7 +51,7 @@ RUN make-cadir /ssl \
   && ./pkitool --initca \
   && ./pkitool init-pki \
   && ./pkitool --server tomcat \
-  && mkdir /tomcat/conf/Catalina/localhost \
+  && mkdir -p /tomcat/conf/Catalina/localhost \
   && chmod -R g+rx /ssl /ssl/keys \
   && chmod g+r /ssl/keys/ca.crt /ssl/keys/tomcat.* \
   && chown -R tomcat:tomcat /tomcat \
