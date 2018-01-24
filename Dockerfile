@@ -2,8 +2,6 @@ FROM nologinb/java8
 
 ENV CATALINA_HOME=/tomcat 
 
-RUN groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat
-
 RUN mkdir /tomcat
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -50,15 +48,7 @@ RUN make-cadir /ssl \
   && ./clean-all \
   && ./pkitool --initca \
   && ./pkitool init-pki \
-  && ./pkitool --server tomcat \
-  && mkdir -p /tomcat/conf/Catalina/localhost \
-  && chmod -R g+rx /ssl /ssl/keys \
-  && chmod g+r /ssl/keys/ca.crt /ssl/keys/tomcat.* \
-  && chown -R tomcat:tomcat /tomcat \
-  && chown -R root:tomcat /ssl \
-  && chown -R root:tomcat /ssl/keys 
-
-USER tomcat:tomcat
+  && ./pkitool --server tomcat 
 
 WORKDIR $CATALINA_HOME
 
