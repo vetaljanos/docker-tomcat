@@ -1,4 +1,4 @@
-FROM nologinb/java8
+FROM nologinb/docker-java:7.80
 
 ENV CATALINA_HOME=/tomcat 
 
@@ -6,16 +6,13 @@ RUN mkdir /tomcat
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   wget \
-  easy-rsa \
   && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_MAJOR 8
-ENV TOMCAT_VERSION 8.5.24
+ENV TOMCAT_VERSION 8.0.52
 
 ENV TOMCAT_TGZ_URLS \
-# https://issues.apache.org/jira/browse/INFRA-8753?focusedCommentId=14735394#comment-14735394
   https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz \
-# if the version is outdated, we might have to pull from the dist/archive :/
   https://www-us.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz \
   https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz \
   https://archive.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz
@@ -38,17 +35,11 @@ RUN set -eux; \
 COPY server.xml /tomcat/conf/server.xml
 COPY logging.properties /tomcat/conf/logging.properties
 
-ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
+ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary $JAVA_EXT_OPTS "    
 ENV CATALINA_TMPDIR=/tmp
 
 #create ssl base certificate
-RUN make-cadir /ssl \
-  && cd /ssl \
-  && . ./vars \
-  && ./clean-all \
-  && ./pkitool --initca \
-  && ./pkitool init-pki \
-  && ./pkitool --server tomcat 
+RUN /usr/lib/jvm/default-jvm/bin/keytool -genkey -alias tomcat -keyalg RSA -storepass changeit -keypass changeit -dname "CN=tomcat, OU=, O=, L=, S=, C="
 
 WORKDIR $CATALINA_HOME
 
