@@ -5,7 +5,7 @@ ENV CATALINA_HOME=/tomcat
 RUN mkdir /tomcat
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  wget \
+  wget maven \
   && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_MAJOR 8
