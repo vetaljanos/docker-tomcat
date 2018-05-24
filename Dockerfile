@@ -1,11 +1,11 @@
 FROM nologinb/docker-java:7.80
 
-ENV CATALINA_HOME=/tomcat 
+ENV CATALINA_HOME=/tomcat
 
 RUN mkdir /tomcat
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  wget maven \
+  wget \
   && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_MAJOR 8
@@ -32,9 +32,15 @@ RUN set -eux; \
   rm -Rf tomcat/webapps/*; \
   rm tomcat.tar.gz*
 
+RUN wget -O maven.tar.gz http://apache.volia.net/maven/binaries/apache-maven-3.1.1-bin.tar.gz \
+  && mkdir /opt/maven \
+  && tar -xvf maven.tar.gz --strip-components=1 -C /opt/maven \
+  && rm maven.tar.gz
+
 COPY server.xml /tomcat/conf/server.xml
 COPY logging.properties /tomcat/conf/logging.properties
 
+ENV PATH=$PATH:/opt/maven/bin
 ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary $JAVA_EXT_OPTS "    
 ENV CATALINA_TMPDIR=/tmp
 
