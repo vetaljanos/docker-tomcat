@@ -1,4 +1,4 @@
-FROM nologinb/java8
+FROM nologinb/docker-java:10.0.1
 
 ENV CATALINA_HOME=/tomcat 
 
@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_MAJOR 8
-ENV TOMCAT_VERSION 8.5.24
+ENV TOMCAT_VERSION 8.5.31
 
 ENV TOMCAT_TGZ_URLS \
 # https://issues.apache.org/jira/browse/INFRA-8753?focusedCommentId=14735394#comment-14735394
@@ -38,27 +38,18 @@ RUN set -eux; \
 COPY server.xml /tomcat/conf/server.xml
 COPY logging.properties /tomcat/conf/logging.properties
 
-ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
+ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+ExitOnOutOfMemoryError "    
 ENV CATALINA_TMPDIR=/tmp
 
 #create ssl base certificate
 RUN make-cadir /ssl \
   && cd /ssl \
+  && cp openssl-1.0.0.cnf openssl.cnf \
   && . ./vars \
   && ./clean-all \
   && ./pkitool --initca \
   && ./pkitool init-pki \
   && ./pkitool --server tomcat 
-
-#create tomcat user/group
-RUN groupadd tomcat && useradd -s /bin/bash -M -d /tomcat -g tomcat tomcat \
-  && chown -R tomcat:tomcat /tomcat \
-  && chown -R root:tomcat /ssl \
-  && chown -R root:tomcat /ssl/keys \
-  && chmod -R g+rx /ssl /ssl/keys \
-  && chmod g+r /ssl/keys/ca.crt /ssl/keys/tomcat.* 
-
-USER tomcat:tomcat
 
 WORKDIR $CATALINA_HOME
 
