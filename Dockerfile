@@ -38,7 +38,7 @@ RUN set -eux; \
 COPY server.xml /tomcat/conf/server.xml
 COPY logging.properties /tomcat/conf/logging.properties
 
-ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError "    
+ENV JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError -XX:MaxRAMFraction=1 "    
 ENV CATALINA_TMPDIR=/tmp
 
 #create ssl base certificate
