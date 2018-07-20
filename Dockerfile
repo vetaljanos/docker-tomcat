@@ -44,6 +44,7 @@ ENV CATALINA_TMPDIR=/tmp
 #create ssl base certificate
 RUN make-cadir /ssl \
   && cd /ssl \
+  && cp openssl-1.0.0.cnf openssl.cnf \
   && . ./vars \
   && ./clean-all \
   && ./pkitool --initca \
