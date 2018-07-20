@@ -1,4 +1,4 @@
-FROM nologinb/java8
+FROM nologinb/docker-java:8
 
 ENV CATALINA_HOME=/tomcat 
 
