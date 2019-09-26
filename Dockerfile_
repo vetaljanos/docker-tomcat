@@ -34,14 +34,14 @@ SHELL ["/bin/bash", "-c"]
 
 #create ssl base certificate
 RUN mkdir -p /build/ssl && cd /build/ssl
-RUN openssl genrsa  -out /build/ssl/ca-key.pem
+RUN openssl ecparam -name prime256v1 -genkey -out /build/ssl/ca-key.pem
 RUN openssl req -nodes -x509 -key /build/ssl/ca-key.pem \
     -subj "/C=CC/ST=ST/L=L/O=O/OU=OU/CN=Temporary CA" \
     -extensions san \
     -config <(echo -e '[req]\ndistinguished_name=req \n [san] \n basicConstraints=critical,CA:TRUE,pathlen:0 \n keyUsage = cRLSign, keyCertSign, digitalSignature') \
     -days 7300 \
     -out /build/ssl/ca.pem 
-RUN openssl genrsa -out /build/ssl/tomcat-key.pem
+RUN openssl ecparam -name prime256v1 -genkey -out /build/ssl/tomcat-key.pem
 RUN openssl req -new \
     -subj "/C=CC/ST=ST/L=L/O=O/OU=OU/CN=tomcat.temporary.addr" \
     -key /build/ssl/tomcat-key.pem \

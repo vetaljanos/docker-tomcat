@@ -6,7 +6,6 @@
     <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
 
     <Service name="Catalina">
-
         <Connector port="8080" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
                    connectionTimeout="20000"
                    proxyPort="443"
@@ -18,11 +17,10 @@
         <Connector port="8443" protocol="org.apache.coyote.http11.Http11NioProtocol"
                    maxThreads="150" SSLEnabled="true">
           <SSLHostConfig>
-            <!--<Certificate certificateKeystoreFile="conf/localhost-rsa.jks" type="RSA" />-->
-            <Certificate certificateKeyFile="/ssl/keys/tomcat.key"
-                         certificateFile="/ssl/keys/tomcat.crt"
-                         certificateChainFile="/ssl/keys/ca.crt"
-                         type="RSA" />
+            <Certificate certificateKeyFile="/ssl/tomcat-key.pem"
+                         certificateFile="/ssl/tomcat.pem"
+                         certificateChainFile="/ssl/ca.pem"
+                         type="EC" />
           </SSLHostConfig>
         </Connector>
 
