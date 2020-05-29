@@ -1,7 +1,7 @@
-FROM debian:10
+FROM debian:9
 
 ENV TOMCAT_MAJOR 8
-ENV TOMCAT_VERSION 8.5.46
+ENV TOMCAT_VERSION 8.5.55
 ENV TOMCAT_TGZ_URLS \
 # https://issues.apache.org/jira/browse/INFRA-8753?focusedCommentId=14735394#comment-14735394
   https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz \
@@ -55,18 +55,20 @@ RUN openssl x509 -req \
         -extfile <(echo -e 'subjectAltName=IP:127.0.0.1 \n basicConstraints=CA:FALSE \n keyUsage = nonRepudiation, digitalSignature, keyEncipherment \n subjectKeyIdentifier=hash \n authorityKeyIdentifier=keyid,issuer \n issuerAltName=issuer:copy')
 RUN rm -f /build/ssl/ca-key.pem /build/ssl/tomcat.csr /build/ssl/ca.srl
 
+COPY addons /build
+
 # main container
-FROM nologinb/docker-java:8
+FROM debian:9
 
 ENV CATALINA_HOME=/tomcat \
     JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError -XX:MaxRAMFraction=1 " \
     CATALINA_TMPDIR=/tmp
 
 RUN apt-get update && apt-get upgrade -y \
+  && apt -y install --no-install-recommends openjdk-8-jre \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=0 /build /
-COPY addons /
 
 WORKDIR $CATALINA_HOME
 
