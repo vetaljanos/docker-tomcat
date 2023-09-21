@@ -1,7 +1,7 @@
-FROM debian:9
+FROM debian:12
 
-ENV TOMCAT_MAJOR 8
-ENV TOMCAT_VERSION 8.5.55
+ENV TOMCAT_MAJOR 10
+ENV TOMCAT_VERSION 10.1.13
 ENV TOMCAT_TGZ_URLS \
 # https://issues.apache.org/jira/browse/INFRA-8753?focusedCommentId=14735394#comment-14735394
   https://www.apache.org/dyn/closer.cgi?action=download&filename=tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz \
@@ -58,14 +58,14 @@ RUN rm -f /build/ssl/ca-key.pem /build/ssl/tomcat.csr /build/ssl/ca.srl
 COPY addons /build
 
 # main container
-FROM debian:9
+FROM debian:12
 
 ENV CATALINA_HOME=/tomcat \
     JAVA_OPTS=" -XX:NativeMemoryTracking=summary -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:+ExitOnOutOfMemoryError -XX:MaxRAMFraction=1 " \
     CATALINA_TMPDIR=/tmp
 
 RUN apt-get update && apt-get upgrade -y \
-  && apt -y install --no-install-recommends openjdk-8-jre \
+  && apt -y install --no-install-recommends openjdk-17-jre \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=0 /build /
